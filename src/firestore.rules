@@ -1,0 +1,106 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if the requesting user is the owner based on the path.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Helper function to get a user's role from their user document.
+    // Safely checks for document existence before accessing data.
+    function getUserRole(uid) {
+      let userDocPath = /databases/$(database)/documents/users/$(uid);
+      if (exists(userDocPath)) {
+        return get(userDocPath).data.role;
+      }
+      return 'none'; // Return a default non-privileged role if doc doesn't exist
+    }
+
+    // Helper function to check if the requesting user is an admin or super_admin.
+    function isAdmin() {
+      // Ensure the user is authenticated before trying to get their role.
+      return request.auth != null && getUserRole(request.auth.uid) in ['admin', 'super_admin'];
+    }
+
+    // Helper function to check if a user is authenticated (not anonymous)
+    function isAuthenticated() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Rule for user profile documents.
+    // Users can read and update their own profile, but cannot change their role.
+    // Admins can create new users, read any profile, and update any profile except a super_admin's role.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      // Allow creation if the user is creating their own doc, or if the requester is an admin.
+      // An admin can create a user doc for a new user.
+      allow create: if isOwner(userId) || isAdmin();
+      // Allow update if user is owner AND they are not changing their role, OR if user is admin.
+      // Admins cannot change the role of a super_admin.
+      allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || 
+                     (isAdmin() && (getUserRole(userId) != 'super_admin' || request.resource.data.role == 'super_admin'));
+      // Only admins can delete users, and they cannot delete the super_admin.
+      allow delete: if isAdmin() && getUserRole(userId) != 'super_admin';
+    }
+    
+    // Rules for the root 'projects' collection
+    match /projects/{projectId} {
+      // Admins can perform any action.
+      // Authenticated users can create projects for themselves.
+      // Owners can update/delete. Owners and members can read.
+      allow read: if isAdmin() || (isAuthenticated() && (request.auth.uid == resource.data.ownerId || (resource.data.members != null && request.auth.uid in resource.data.members)));
+      allow create: if isAdmin() || (isAuthenticated() && request.resource.data.ownerId == request.auth.uid);
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.ownerId == request.auth.uid);
+    }
+    
+    // Rule for manual payment requests.
+    // Anyone (including anonymous users) can create a request.
+    // Only Admins can read, update, or delete them.
+    match /paymentRequests/{paymentRequestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // Rule for subscription plans.
+    // Anyone (including anonymous users) can list and read them. Only admins can write.
+    match /subscriptionPlans/{planId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAdmin();
+    }
+
+    // Rule for QR code settings.
+    // Public can read, only admins can write.
+    match /qr_settings/{settingId} {
+        allow get: if true;
+        allow write: if isAdmin();
+    }
+
+    // Rule for activity logs.
+    // Only admins can read or write to the activity log.
+    match /activityLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Rule for globally available live stream filters.
+    // Anyone can read them, but only admins can create/update/delete them.
+    match /liveStreamFilters/{filterId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+
+    // Rule for system logs.
+    // Writable by the system (implicitly through trusted server code/functions), readable by admins.
+    match /systemLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Rule for support tickets.
+    // Authenticated (non-anonymous) users can create their own tickets. Admins can manage all tickets.
+    match /supportTickets/{ticketId} {
+        allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+        allow read, update, delete: if isAdmin();
+    }
+  }
+}
