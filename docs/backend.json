@@ -1,0 +1,1536 @@
+
+{
+  "entities": {
+    "PaymentRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Payment Request",
+      "type": "object",
+      "description": "Records details of manual payment requests sent by potential customers. Can be approved manually by an admin or verified automatically.",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "The full name of the customer."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the customer.",
+          "format": "email"
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "The WhatsApp number of the customer."
+        },
+        "plan": {
+          "type": "string",
+          "description": "The subscription plan requested by the customer."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount paid by the customer."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "The unique transaction ID from the payment provider."
+        },
+        "screenshotBase64": {
+          "type": "string",
+          "description": "Base64 encoded string of the payment screenshot uploaded by the customer.",
+          "contentEncoding": "base64",
+          "media": {
+            "type": "image/png"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the payment request.",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "verified",
+            "failed"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the payment request was created.",
+          "format": "date-time"
+        },
+        "generatedUsername": {
+          "type": "string",
+          "description": "The generated username for the user upon manual approval."
+        },
+        "approvedAt": {
+          "type": "string",
+          "description": "Timestamp when the request was manually approved.",
+          "format": "date-time"
+        },
+        "verifiedAt": {
+          "type": "string",
+          "description": "Timestamp when the payment was automatically verified.",
+          "format": "date-time"
+        },
+        "verificationFailureReason": {
+          "type": "string",
+          "description": "Reason why automatic verification failed."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user whose account was provisioned from this payment."
+        }
+      },
+      "required": [
+        "fullName",
+        "email",
+        "whatsapp",
+        "plan",
+        "amount",
+        "transactionId",
+        "status",
+        "createdAt"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents an authenticated user of the application, storing profile information and system-specific attributes. This entity is used for all user types, including subscribers, creators, and administrators (admin staff), distinguished by the 'role' attribute.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique user ID from Firebase Authentication, matching the document ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "The authorization role of the user within the application.",
+          "enum": [
+            "super_admin",
+            "admin",
+            "staff",
+            "subscriber"
+          ]
+        },
+        "plan": {
+          "type": "string",
+          "description": "The user's subscription plan.",
+          "enum": [
+            "free",
+            "monthly",
+            "quarterly",
+            "yearly",
+            "enterprise"
+          ]
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Indicates if the user's account is disabled. `false` means active, `true` means disabled."
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The UID of the admin user who created or approved this account (optional)."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the user's profile was first created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the user's profile was last updated.",
+          "format": "date-time"
+        },
+        "subscriptionStart": {
+          "type": "string",
+          "description": "Timestamp when the user's subscription starts (optional).",
+          "format": "date-time"
+        },
+        "subscriptionEnd": {
+          "type": "string",
+          "description": "Timestamp when the user's subscription expires (optional).",
+          "format": "date-time"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's public display name (optional)."
+        },
+        "profileImageUrl": {
+          "type": "string",
+          "description": "URL to the user's profile picture (optional).",
+          "format": "uri"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The user's phone number (optional, for super_admin)."
+        },
+        "permissions": {
+          "type": "object",
+          "description": "Granular feature permissions for the user.",
+          "properties": {
+            "animation": {
+              "type": "boolean",
+              "description": "Access to the Animation Studio."
+            },
+            "reels": {
+              "type": "boolean",
+              "description": "Access to the Reels Generator."
+            },
+            "voiceClone": {
+              "type": "boolean",
+              "description": "Access to the Voice Clone feature."
+            },
+            "avatar": {
+              "type": "boolean",
+              "description": "Access to the 3D Avatar Creator."
+            },
+            "cinematic": {
+              "type": "boolean",
+              "description": "Access to the Cinematic Camera feature."
+            }
+          },
+          "required": [
+            "animation",
+            "reels",
+            "voiceClone",
+            "avatar",
+            "cinematic"
+          ],
+          "additionalProperties": false
+        },
+        "wallet": {
+          "type": "object",
+          "description": "Stores the user's credit balance for usage-based billing.",
+          "properties": {
+            "credits": {
+              "type": "number",
+              "description": "The current number of available credits."
+            },
+            "spent": {
+              "type": "number",
+              "description": "The total number of credits spent by the user."
+            }
+          }
+        },
+        "linkedPaymentRequestId": {
+          "type": "string",
+          "description": "The ID of the payment request that led to the creation of this manual account (optional)."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "role",
+        "plan",
+        "createdAt",
+        "updatedAt",
+        "disabled",
+        "permissions"
+      ]
+    },
+    "ManualAccount": {
+      "title": "Manual Account Log",
+      "type": "object",
+      "description": "A log entry for a user account created manually by an admin from a payment request.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email address of the created user."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The generated username (e.g., guest_2024_001) for the user."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role assigned to the user.",
+          "enum": [
+            "subscriber",
+            "staff",
+            "admin"
+          ]
+        },
+        "plan": {
+          "type": "string",
+          "description": "The subscription plan assigned to the user.",
+          "enum": [
+            "free",
+            "monthly",
+            "quarterly",
+            "yearly",
+            "enterprise"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the log entry was created."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the user's subscription expires."
+        },
+        "paymentRequestId": {
+          "type": "string",
+          "description": "The ID of the payment request that initiated this manual account creation."
+        }
+      },
+      "required": [
+        "email",
+        "userId",
+        "role",
+        "plan",
+        "createdAt",
+        "paymentRequestId",
+        "expiresAt"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a top-level animation or creative project, containing scenes, assets, and other related data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the project."
+        },
+        "creationDate": {
+          "type": "string",
+          "description": "Timestamp when the project was created.",
+          "format": "date-time"
+        },
+        "lastModifiedDate": {
+          "type": "string",
+          "description": "Timestamp when the project was last modified.",
+          "format": "date-time"
+        },
+        "ownerUserId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Project)"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the project, e.g., active or archived.",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "timeline": {
+          "type": "array",
+          "description": "The editing timeline for the project, composed of multiple tracks.",
+          "items": {
+            "$ref": "#/backend/entities/TimelineTrack"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "creationDate",
+        "lastModifiedDate",
+        "ownerUserId",
+        "status"
+      ]
+    },
+    "StoryIdea": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StoryIdea",
+      "type": "object",
+      "description": "Stores AI-generated story concepts, plotlines, character ideas, or scene outlines for animation projects.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StoryIdea entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "A short, descriptive title for the story idea."
+        },
+        "plotline": {
+          "type": "string",
+          "description": "The generated main plot summary or synopsis."
+        },
+        "characterConceptsJson": {
+          "type": "string",
+          "description": "A JSON string containing detailed character concepts (e.g., names, personalities, designs, relationships)."
+        },
+        "sceneOutlinesJson": {
+          "type": "string",
+          "description": "A JSON string containing outlines or descriptions of suggested scenes."
+        },
+        "generationTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the story idea was generated.",
+          "format": "date-time"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project. (Relationship: Project 1:N StoryIdea)"
+        },
+        "generatedByUserId": {
+          "type": "string",
+          "description": "Reference to User who generated this idea. (Relationship: User 1:N StoryIdea)"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "plotline",
+        "generationTimestamp",
+        "projectId",
+        "generatedByUserId"
+      ]
+    },
+    "AssetCategory": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AssetCategory",
+      "type": "object",
+      "description": "Defines categories for organizing 2D assets within the library.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AssetCategory entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the asset category (e.g., 'Fantasy Characters', 'Sci-Fi Backgrounds')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the category."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User who owns this category. Allows for user-defined categories. (Relationship: User 1:N AssetCategory)"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "userId"
+      ]
+    },
+    "Asset": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Asset",
+      "type": "object",
+      "description": "Represents an individual 2D media file, such as a character, prop, background image, or audio clip.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Asset entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The display name of the asset."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of the asset, categorizing its use.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "URL or path to the actual asset file (e.g., image, audio file).",
+          "format": "uri"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "URL or path to a smaller preview image (thumbnail) of the asset.",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the asset."
+        },
+        "tags": {
+          "type": "array",
+          "description": "A list of keywords or tags for searching and filtering assets.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uploadedByUserId": {
+          "type": "string",
+          "description": "Reference to User who uploaded this asset. (Relationship: User 1:N Asset)"
+        },
+        "uploadTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the asset was uploaded.",
+          "format": "date-time"
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Reference to AssetCategory. (Relationship: AssetCategory 1:N Asset)"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Optional reference to a Project, indicating if this asset is specific to a particular project rather than a general library asset. (Relationship: Project 1:N Asset)"
+        },
+        "usedInTimeline": {
+          "type": "boolean",
+          "description": "Flag indicating if the asset is currently used in a timeline."
+        },
+        "usedInExport": {
+          "type": "boolean",
+          "description": "Flag indicating if the asset was part of a recent export."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "fileUrl",
+        "uploadedByUserId",
+        "uploadTimestamp",
+        "categoryId"
+      ]
+    },
+    "Scene": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Scene",
+      "type": "object",
+      "description": "Represents a static visual composition within a project, including a background and placed assets.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Scene entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the scene (e.g., 'Opening Forest', 'City Chase')."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project this scene belongs to. (Relationship: Project 1:N Scene)"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the scene's content or purpose."
+        },
+        "backgroundAssetId": {
+          "type": "string",
+          "description": "Reference to the Asset used as the background for this scene. (Relationship: Asset 1:N Scene)"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "URL or path to a thumbnail image representing the scene's visual content.",
+          "format": "uri"
+        },
+        "orderIndex": {
+          "type": "number",
+          "description": "The sequential order of the scene within its project."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "projectId",
+        "backgroundAssetId",
+        "orderIndex"
+      ]
+    },
+    "SceneAsset": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SceneAsset",
+      "type": "object",
+      "description": "Represents an instance of an Asset placed within a Scene, including its position, scale, rotation, and layering.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the SceneAsset entity."
+        },
+        "sceneId": {
+          "type": "string",
+          "description": "Reference to Scene where this asset is placed. (Relationship: Scene 1:N SceneAsset)"
+        },
+        "assetId": {
+          "type": "string",
+          "description": "Reference to the original Asset definition. (Relationship: Asset 1:N SceneAsset)"
+        },
+        "xPosition": {
+          "type": "number",
+          "description": "The X-coordinate of the asset's position within the scene."
+        },
+        "yPosition": {
+          "type": "number",
+          "description": "The Y-coordinate of the asset's position within the scene."
+        },
+        "scaleX": {
+          "type": "number",
+          "description": "The horizontal scale factor of the asset (e.g., 1.0 for original size)."
+        },
+        "scaleY": {
+          "type": "number",
+          "description": "The vertical scale factor of the asset (e.g., 1.0 for original size)."
+        },
+        "rotation": {
+          "type": "number",
+          "description": "The rotation angle of the asset in degrees."
+        },
+        "zIndex": {
+          "type": "number",
+          "description": "The layering order of the asset within the scene (higher values appear on top)."
+        },
+        "propertiesJson": {
+          "type": "string",
+          "description": "A JSON string for additional custom properties specific to this instance of the asset (e.g., color tint, flip status, opacity)."
+        }
+      },
+      "required": [
+        "id",
+        "sceneId",
+        "assetId",
+        "xPosition",
+        "yPosition",
+        "scaleX",
+        "scaleY",
+        "rotation",
+        "zIndex"
+      ]
+    },
+    "Timeline": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project Timeline",
+      "type": "object",
+      "description": "Represents the editing timeline for a project, composed of multiple tracks containing asset references.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Timeline entity, typically the same as the project ID."
+        },
+        "tracks": {
+          "type": "array",
+          "description": "An array of tracks (video, audio, etc.) that make up the timeline.",
+          "items": {
+            "$ref": "#/backend/entities/TimelineTrack"
+          }
+        },
+        "version": {
+          "type": "number",
+          "description": "A version number that increments on each save, used for snapshotting exports."
+        }
+      },
+      "required": [
+        "id",
+        "tracks",
+        "version"
+      ]
+    },
+    "TimelineTrack": {
+      "title": "Timeline Track",
+      "type": "object",
+      "description": "A single track within a timeline, holding multiple asset references.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "video",
+            "audio",
+            "overlay"
+          ]
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/backend/entities/TimelineAsset"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "assets"
+      ]
+    },
+    "TimelineAsset": {
+      "title": "Timeline Asset Reference",
+      "type": "object",
+      "description": "A reference to an asset placed on a timeline track. It does not contain the asset data itself.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "A unique ID for this specific instance of the asset on the timeline."
+        },
+        "assetId": {
+          "type": "string",
+          "description": "The ID of the source asset (e.g., from Asset collection)."
+        },
+        "start": {
+          "type": "number",
+          "description": "Start time in seconds from the beginning of the timeline."
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in seconds."
+        }
+      },
+      "required": [
+        "id",
+        "assetId",
+        "start",
+        "duration"
+      ]
+    },
+    "Keyframe": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Keyframe",
+      "type": "object",
+      "description": "Stores a single data point for an animated property of a SceneAsset at a specific time within a Timeline.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Keyframe entity."
+        },
+        "timelineId": {
+          "type": "string",
+          "description": "Reference to Timeline this keyframe belongs to. (Relationship: Timeline 1:N Keyframe)"
+        },
+        "sceneAssetId": {
+          "type": "string",
+          "description": "Reference to SceneAsset being animated by this keyframe. (Relationship: SceneAsset 1:N Keyframe)"
+        },
+        "timeMs": {
+          "type": "number",
+          "description": "The time in milliseconds from the start of the timeline where this keyframe is set."
+        },
+        "property": {
+          "type": "string",
+          "description": "The name of the property being animated (e.g., 'xPosition', 'rotation', 'scaleX', 'opacity')."
+        },
+        "value": {
+          "type": "string",
+          "description": "The value of the animated property at this keyframe. Stored as a string for flexibility across different property types (numbers, booleans, simple strings)."
+        },
+        "interpolationType": {
+          "type": "string",
+          "description": "The type of interpolation used to transition to this keyframe from the previous one.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "timelineId",
+        "sceneAssetId",
+        "timeMs",
+        "property",
+        "value",
+        "interpolationType"
+      ]
+    },
+    "AudioTrack": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AudioTrack",
+      "type": "object",
+      "description": "Stores details about an audio segment (dialogue, music, sound effect) used within a scene or timeline.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AudioTrack entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the audio track (e.g., 'Character A Dialogue', 'Background Music Loop')."
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "URL or path to the audio file.",
+          "format": "uri"
+        },
+        "sceneId": {
+          "type": "string",
+          "description": "Reference to Scene this audio track is associated with. (Relationship: Scene 1:N AudioTrack)"
+        },
+        "startTimeMs": {
+          "type": "number",
+          "description": "The start time of the audio track relative to the beginning of the scene/timeline in milliseconds."
+        },
+        "durationMs": {
+          "type": "number",
+          "description": "The duration of the audio track in milliseconds."
+        },
+        "volume": {
+          "type": "number",
+          "description": "The volume level of the audio track (0.0 to 1.0)."
+        },
+        "trackType": {
+          "type": "string",
+          "description": "The type of audio content.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "addedByUserId": {
+          "type": "string",
+          "description": "Reference to User who added or dubbed this audio track. (Relationship: User 1:N AudioTrack)"
+        },
+        "addedTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the audio track was added.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "fileUrl",
+        "sceneId",
+        "startTimeMs",
+        "durationMs",
+        "volume",
+        "trackType",
+        "addedByUserId",
+        "addedTimestamp"
+      ]
+    },
+    "Watermark": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Watermark",
+      "type": "object",
+      "description": "Defines custom watermark images and their properties that users can apply to exported videos.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Watermark entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the watermark (e.g., 'My Studio Logo', 'Draft Watermark')."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL or path to the watermark image file.",
+          "format": "uri"
+        },
+        "positionJson": {
+          "type": "string",
+          "description": "A JSON string specifying the watermark's position (e.g., `{\"preset\": \"bottom-right\"}` or `{\"x\": 0.9, \"y\": 0.1}` for custom coordinates)."
+        },
+        "opacity": {
+          "type": "number",
+          "description": "The opacity level of the watermark (0.0 for fully transparent, 1.0 for fully opaque)."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User who owns this watermark. (Relationship: User 1:N Watermark)"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Indicates if this watermark is the user's default choice for new exports."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "imageUrl",
+        "positionJson",
+        "opacity",
+        "userId",
+        "isDefault"
+      ]
+    },
+    "StylizedConversion": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StylizedConversion",
+      "type": "object",
+      "description": "Records requests and results for the AI-powered cartoon stylization feature.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StylizedConversion entity."
+        },
+        "sourceFileUrl": {
+          "type": "string",
+          "description": "URL to the original image or video file submitted for conversion.",
+          "format": "uri"
+        },
+        "outputFileUrl": {
+          "type": "string",
+          "description": "URL to the cartoon-stylized output file.",
+          "format": "uri"
+        },
+        "conversionSettingsJson": {
+          "type": "string",
+          "description": "A JSON string detailing the specific style applied and other conversion parameters (e.g., 'anime', 'comic book', 'watercolor' style names, intensity)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the conversion job.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestedByUserId": {
+          "type": "string",
+          "description": "Reference to User who requested this conversion. (Relationship: User 1:N StylizedConversion)"
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the conversion was requested.",
+          "format": "date-time"
+        },
+        "completionTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the conversion was completed.",
+          "format": "date-time"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Optional reference to Project if this conversion is part of a specific project. (Relationship: Project 1:N StylizedConversion)"
+        }
+      },
+      "required": [
+        "id",
+        "sourceFileUrl",
+        "conversionSettingsJson",
+        "status",
+        "requestedByUserId",
+        "requestTimestamp"
+      ]
+    },
+    "ExportJob": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ExportJob",
+      "type": "object",
+      "description": "Records details about a video or image sequence export operation from a project.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ExportJob entity."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project being exported."
+        },
+        "projectName": {
+          "type": "string",
+          "description": "The name of the project being exported."
+        },
+        "format": {
+          "type": "string",
+          "description": "The output format of the export.",
+          "enum": ["video", "gif", "frames"]
+        },
+        "resolution": {
+          "type": "string",
+          "description": "The target resolution for the export.",
+          "enum": ["720p", "1080p", "4K"]
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the export job.",
+          "enum": ["queued", "processing", "completed", "failed"]
+        },
+        "progress": {
+          "type": "number",
+          "description": "The export progress from 0 to 100."
+        },
+        "priority": {
+          "type": "string",
+          "description": "The priority of the export job in the queue.",
+          "enum": ["low", "normal", "high"]
+        },
+        "outputFileUrl": {
+          "type": "string",
+          "description": "URL to the final exported file.",
+          "format": "uri"
+        },
+        "requestedByUserId": {
+          "type": "string",
+          "description": "Reference to User who initiated the export."
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the export was requested.",
+          "format": "date-time"
+        },
+        "completionTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the export was completed.",
+          "format": "date-time"
+        },
+        "timelineVersion": {
+          "type": "number",
+          "description": "A version number of the timeline state that was exported."
+        },
+        "assetVersion": {
+          "type": "number",
+          "description": "A version number of the assets used in the export."
+        },
+        "failureReason": {
+          "type": "string",
+          "description": "Reason for export failure, e.g., 'Missing linked asset'."
+        }
+      },
+      "required": [
+        "id",
+        "projectId",
+        "projectName",
+        "format",
+        "resolution",
+        "status",
+        "requestedByUserId",
+        "requestTimestamp",
+        "priority",
+        "progress",
+        "timelineVersion"
+      ]
+    },
+    "LiveStreamConfiguration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LiveStreamConfiguration",
+      "type": "object",
+      "description": "Stores user-defined settings and preferences for live streaming sessions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LiveStreamConfiguration entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User who owns this configuration. (Relationship: User 1:N LiveStreamConfiguration)"
+        },
+        "name": {
+          "type": "string",
+          "description": "A descriptive name for the streaming configuration (e.g., 'Gaming Setup', 'Tutorial Stream Settings')."
+        },
+        "rtmpUrl": {
+          "type": "string",
+          "description": "The RTMP server URL for streaming (e.g., rtmp://a.rtmp.youtube.com/live2).",
+          "format": "uri"
+        },
+        "streamKey": {
+          "type": "string",
+          "description": "The unique stream key required for authentication with the RTMP server. Note: Sensitive data, implement secure storage/retrieval."
+        },
+        "platform": {
+          "type": "string",
+          "description": "The target streaming platform or 'Custom RTMP'.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resolution": {
+          "type": "string",
+          "description": "The video resolution for the live stream.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bitrateKbps": {
+          "type": "number",
+          "description": "The target video bitrate in kilobits per second."
+        },
+        "cameraMode": {
+          "type": "string",
+          "description": "The aspect ratio or capture mode for the camera.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enableAudioEchoReduction": {
+          "type": "boolean",
+          "description": "Boolean indicating if audio echo reduction should be enabled."
+        },
+        "enableAudioNoiseReduction": {
+          "type": "boolean",
+          "description": "Boolean indicating if audio noise reduction should be enabled."
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Indicates if this is the user's default live stream configuration."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name",
+        "rtmpUrl",
+        "streamKey",
+        "platform",
+        "resolution",
+        "bitrateKbps",
+        "cameraMode",
+        "enableAudioEchoReduction",
+        "enableAudioNoiseReduction",
+        "isDefault"
+      ]
+    },
+    "LiveStreamFilter": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LiveStreamFilter",
+      "type": "object",
+      "description": "Defines OpenGL ES visual effects (filters) that can be applied to a live stream.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LiveStreamFilter entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The display name of the filter (e.g., 'Cinematic LUT A', 'Sepia Tone', 'Gaussian Blur')."
+        },
+        "type": {
+          "type": "string",
+          "description": "The general category or type of the filter.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parametersJson": {
+          "type": "string",
+          "description": "A JSON string containing filter-specific parameters (e.g., blur radius, color matrix, LUT path, intensity)."
+        },
+        "shaderCode": {
+          "type": "string",
+          "description": "Optional: Raw GLSL shader code for custom filters, or a reference to a built-in shader asset."
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "URL to a preview image demonstrating the filter's effect.",
+          "format": "uri"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Optional reference to User who created this custom filter. (Relationship: User 1:N LiveStreamFilter)"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "parametersJson"
+      ]
+    },
+    "LiveStreamConfigurationFilter": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LiveStreamConfigurationFilter",
+      "type": "object",
+      "description": "Junction entity to manage the many-to-many relationship between LiveStreamConfiguration and LiveStreamFilter, including the order of application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LiveStreamConfigurationFilter entity."
+        },
+        "liveStreamConfigurationId": {
+          "type": "string",
+          "description": "Reference to LiveStreamConfiguration. (Relationship: LiveStreamConfiguration 1:N LiveStreamConfigurationFilter)"
+        },
+        "liveStreamFilterId": {
+          "type": "string",
+          "description": "Reference to LiveStreamFilter. (Relationship: LiveStreamFilter 1:N LiveStreamConfigurationFilter)"
+        },
+        "orderIndex": {
+          "type": "number",
+          "description": "The sequential order in which this filter is applied within the configuration's FX pipeline."
+        }
+      },
+      "required": [
+        "id",
+        "liveStreamConfigurationId",
+        "liveStreamFilterId",
+        "orderIndex"
+      ]
+    },
+    "LiveStreamSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LiveStreamSession",
+      "type": "object",
+      "description": "Records historical data for past live streaming sessions, including status, duration, and associated configuration.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LiveStreamSession entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User who conducted the live stream. (Relationship: User 1:N LiveStreamSession)"
+        },
+        "liveStreamConfigurationId": {
+          "type": "string",
+          "description": "Reference to LiveStreamConfiguration used for this session. (Relationship: LiveStreamConfiguration 1:N LiveStreamSession)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the live stream as displayed to viewers."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the live stream's content."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Timestamp when the live stream officially started.",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "Optional timestamp when the live stream officially ended. Null if still ongoing or interrupted.",
+          "format": "date-time"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "description": "The total duration of the live stream in seconds."
+        },
+        "platform": {
+          "type": "string",
+          "description": "The platform where the stream was broadcasted.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "viewershipCount": {
+          "type": "number",
+          "description": "The peak or final viewership count for the session."
+        },
+        "recordingUrl": {
+          "type": "string",
+          "description": "Optional URL to the recorded version of the live stream if saved by the platform.",
+          "format": "uri"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current or final status of the live stream session.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "liveStreamConfigurationId",
+        "title",
+        "startTime",
+        "platform",
+        "status"
+      ]
+    },
+    "AdminNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin Notification",
+      "type": "object",
+      "description": "Records events that require admin attention, such as new payment requests.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of event being notified.",
+          "enum": [
+            "payment_request"
+          ]
+        },
+        "referenceId": {
+          "type": "string",
+          "description": "The ID of the document related to the notification (e.g., payment request ID)."
+        },
+        "message": {
+          "type": "string",
+          "description": "A short message describing the event."
+        },
+        "isRead": {
+          "type": "boolean",
+          "description": "Indicates if an admin has viewed the notification."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the notification was created."
+        }
+      },
+      "required": [
+        "type",
+        "referenceId",
+        "message",
+        "isRead",
+        "createdAt"
+      ]
+    },
+    "SubscriptionPlan": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Subscription Plan",
+      "type": "object",
+      "description": "Defines the available subscription plans, including their name, duration, and price.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the subscription plan."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the plan, used as an identifier.",
+          "enum": [
+            "monthly",
+            "quarterly",
+            "yearly",
+            "enterprise"
+          ]
+        },
+        "durationInMonths": {
+          "type": "number",
+          "description": "The duration of the subscription plan in months."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the subscription plan."
+        },
+        "currency": {
+          "type": "string",
+          "description": "The currency of the price (e.g., 'INR', 'USD').",
+          "default": "INR"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Indicates if the plan is currently available for purchase."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "durationInMonths",
+        "price",
+        "currency",
+        "isActive"
+      ]
+    },
+    "QrSetting": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QR Code Setting",
+      "type": "object",
+      "description": "Stores details about the active QR code for manual payments.",
+      "properties": {
+        "qrImage": {
+          "type": "string",
+          "description": "The URL of the active QR code image.",
+          "format": "uri"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Indicates if the QR code is currently active and should be displayed to users."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the QR code setting was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "qrImage",
+        "active",
+        "updatedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores public profile information for all users. The document ID matches the user's Firebase Auth UID. User-specific data is stored here."
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Root collection for all projects. Each project document contains an 'ownerId' field to link it to a user in the '/users' collection. Project documents also contain arrays of sub-documents for characters, scenes, etc."
+        }
+      },
+      {
+        "path": "/paymentRequests/{paymentRequestId}",
+        "definition": {
+          "entityName": "PaymentRequest",
+          "schema": {
+            "$ref": "#/backend/entities/PaymentRequest"
+          },
+          "description": "Stores details of manual payment requests sent by guests. Readable/manageable only by admins."
+        }
+      },
+      {
+        "path": "/qr_settings/{settingId}",
+        "definition": {
+          "entityName": "QrSetting",
+          "schema": {
+            "$ref": "#/backend/entities/QrSetting"
+          },
+          "description": "Stores the active QR code settings for payments. Writable only by admins."
+        }
+      },
+      {
+        "path": "/subscriptionPlans/{planId}",
+        "definition": {
+          "entityName": "SubscriptionPlan",
+          "schema": {
+            "$ref": "#/backend/entities/SubscriptionPlan"
+          },
+          "description": "Defines available subscription plans. Readable by authenticated users, writable by admins."
+        }
+      },
+      {
+        "path": "/activityLogs/{logId}",
+        "definition": {
+          "entityName": "ActivityLog",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "actorUid": {
+                "type": "string"
+              },
+              "actorEmail": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "description": "Records administrative actions performed within the app. Readable/writable only by admins."
+        }
+      },
+      {
+        "path": "/systemLogs/{logId}",
+        "definition": {
+          "entityName": "SystemLog",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warn",
+                  "info"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "stack": {
+                "type": "string"
+              },
+              "context": {
+                "type": "object"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "uid": {
+                "type": "string"
+              },
+              "userAgent": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Logs critical system errors and events. Writable by the system, readable by admins."
+        }
+      },
+      {
+        "path": "/supportTickets/{ticketId}",
+        "definition": {
+          "entityName": "SupportTicket",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "in_progress",
+                  "closed"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "description": "Stores support tickets submitted by users. Writable by authenticated users, readable/manageable by admins."
+        }
+      },
+      {
+        "path": "/manual_accounts/{accountId}",
+        "definition": {
+          "entityName": "ManualAccount",
+          "schema": {
+            "$ref": "#/backend/entities/ManualAccount"
+          },
+          "description": "Stores a log of manually created user accounts for administrative tracking."
+        }
+      },
+      {
+        "path": "/admin_notifications/{notificationId}",
+        "definition": {
+          "entityName": "AdminNotification",
+          "schema": {
+            "$ref": "#/backend/entities/AdminNotification"
+          },
+          "description": "Stores notifications for admins. Writable by authenticated users, readable/updatable by admins."
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure uses a root collection model for primary entities like `users` and `projects`. This design simplifies queries, especially for administrators who need to view all projects regardless of the owner. Security is enforced via rules that check for an `ownerId` field within each project document, aligning with the Query-as-you-Pay (QAP) principle by avoiding cross-document reads in list queries. Other system-level collections (`paymentRequests`, `qr_settings`, etc.) are also at the root and are secured for admin-only access. This flat structure, combined with document-level ownership fields, provides a scalable and secure data model."
+  }
+}
