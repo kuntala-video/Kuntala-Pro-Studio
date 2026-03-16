@@ -1,0 +1,74 @@
+{
+  "placeholderImages": [
+    {
+      "id": "char1",
+      "category": "character",
+      "description": "Brave Knight",
+      "imageUrl": "https://images.unsplash.com/photo-1765667641734-94e28220724e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxrbmlnaHQlMjBjaGFyYWN0ZXJ8ZW58MHx8fHwxNzcyNTI3OTE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "knight character"
+    },
+    {
+      "id": "char2",
+      "category": "character",
+      "description": "Space Explorer",
+      "imageUrl": "https://images.unsplash.com/photo-1571769267292-e24dfadebbdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzcGFjZSUyMGV4cGxvcmVyfGVufDB8fHx8MTc3MjUyNzkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "space explorer"
+    },
+    {
+      "id": "char3",
+      "category": "character",
+      "description": "Wise Wizard",
+      "imageUrl": "https://images.unsplash.com/photo-1771148835096-b843d0b539a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3aXphcmQlMjBjaGFyYWN0ZXJ8ZW58MHx8fHwxNzcyNTI3OTE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wizard character"
+    },
+    {
+      "id": "char4",
+      "category": "character",
+      "description": "Cyberpunk Hacker",
+      "imageUrl": "https://images.unsplash.com/photo-1580046939256-c377c5b099f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjeWJlcnB1bmslMjBoYWNrZXJ8ZW58MHx8fHwxNzcyNTI3OTE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cyberpunk hacker"
+    },
+    {
+      "id": "prop1",
+      "category": "prop",
+      "description": "Magic Sword",
+      "imageUrl": "https://images.unsplash.com/photo-1728325430058-d14f990cb727?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYWdpYyUyMHN3b3JkfGVufDB8fHx8MTc3MjUyNzkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "magic sword"
+    },
+    {
+      "id": "prop2",
+      "category": "prop",
+      "description": "Treasure Chest",
+      "imageUrl": "https://images.unsplash.com/photo-1602503875398-23215561eabc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0cmVhc3VyZSUyMGNoZXN0fGVufDB8fHx8MTc3MjUyNzkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "treasure chest"
+    },
+    {
+      "id": "prop3",
+      "category": "prop",
+      "description": "Spaceship",
+      "imageUrl": "https://images.unsplash.com/photo-1639262498805-17c7dc422d37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3BhY2VzaGlwfGVufDB8fHx8MTc3MjUyNzkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spaceship"
+    },
+    {
+      "id": "bg1",
+      "category": "background",
+      "description": "Enchanted Forest",
+      "imageUrl": "https://images.unsplash.com/photo-1530660877224-1cb26c2acea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZW5jaGFudGVkJTIwZm9yZXN0fGVufDB8fHx8MTc3MjQzMjk4Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "enchanted forest"
+    },
+    {
+      "id": "bg2",
+      "category": "background",
+      "description": "Futuristic Cityscape",
+      "imageUrl": "https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwY2l0eXNjYXBlfGVufDB8fHx8MTc3MjQ1NTg3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic cityscape"
+    },
+    {
+      "id": "bg3",
+      "category": "background",
+      "description": "Castle Interior",
+      "imageUrl": "https://images.unsplash.com/photo-1565039328894-282b58739109?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjYXN0bGUlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NzI1Mjc5MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "castle interior"
+    }
+  ]
+}
