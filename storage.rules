@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check for Super Admin role
+    function isSuperAdmin() {
+      return exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'super_admin';
+    }
+    
+    // Helper function to check for any admin or staff role
+    function isAdminStaff() {
+      return exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['admin', 'staff', 'super_admin'];
+    }
+
+    // QR Codes: Publicly readable, but only writable by Super Admins.
+    match /qr-codes/default_qr.png {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Payment Screenshots: Writable by any authenticated user (including anonymous),
+    // but only readable by admin staff. This protects user privacy.
+    match /payment-screenshots/{fileName} {
+      allow read: if isAdminStaff();
+      allow write: if request.auth != null;
+    }
+    
+    // Character Avatars: Publicly readable, but only writable by the owner.
+    match /character-avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Generated Videos: Publicly readable, writable by the owner.
+    match /generated-videos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Voice Profiles: Publicly readable, writable by the owner.
+    match /voice-profiles/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default deny all other access to prevent unauthorized file access.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
